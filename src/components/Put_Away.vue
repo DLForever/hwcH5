@@ -13,7 +13,7 @@
       <x-button class="getdata-button" text="确定" type="primary" @click.native="getData"></x-button>
     </group>
     <br>
-    <div v-if="fnsku_options.length != 0">
+    <div v-if="fnsku_options.length != 0" class="tableinfo">
       <!-- <x-button class="putaway-button" text="上架" type="primary" @click.native="putaway"></x-button>
       <br/> -->
       <x-table class="breakword">
@@ -25,7 +25,7 @@
             <th>fnsku</th>
             <th>库位</th>
             <th>数量</th>
-            <!-- <th>上传</th> -->
+            <th>不良品</th>
           </tr>
         </thead>
         <tbody v-for="(item, index) in fnsku_options">
@@ -36,7 +36,8 @@
             <td style="cursor: pointer; width:2rem;" @click="showConfirm(index)"><img src="@/assets/upload.png" class="img-upload"></td>
             <td style="width:10rem; word-wrap:break-word;">{{item.fnsku}}</td>
             <td style="width:5rem;cursor: pointer;" @click="showWareInput(index)">{{item.ware}}</td>
-            <td style="width:5rem"><x-input v-model.trim="item.arrive_sum" :show-clear="false"></x-input></td>
+            <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.arrive_sum"></input></td>
+            <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.bad_product"></input></td>
           </tr>
           <tr v-else-if="item.status==8" style='background: #E66671;'>
             <!-- <td style="width:2rem">{{index+1}}</td> -->
@@ -45,7 +46,8 @@
             <td style="cursor: pointer; width:2rem;" @click="showConfirm(index)"><img src="@/assets/upload.png" class="img-upload"></td>
             <td style="width:10rem; word-wrap:break-word;">{{item.fnsku}}</td>
             <td style="width:5rem;cursor: pointer;" @click="showWareInput(index)">{{item.ware}}</td>
-            <td style="width:5rem"><x-input v-model.trim="item.arrive_sum" :show-clear="false"></x-input></td>
+            <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.arrive_sum"></input></td>
+            <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.bad_product"></input></td>
           </tr>
           <tr v-else>
             <!-- <td style="width:2rem">{{index+1}}</td> -->
@@ -54,7 +56,9 @@
             <td style="cursor: pointer; width:2rem;" @click="showConfirm(index)"><img src="@/assets/upload.png" class="img-upload"></td>
             <td style="word-wrap:break-word;">{{item.fnsku}}</td>
             <td style="cursor: pointer;" @click="showWareInput(index)">{{item.ware}}</td>
-            <td style="cursor: pointer;"><x-input v-model.trim="item.arrive_sum" :show-clear="false"></x-input></td>
+            <!-- <td style="cursor: pointer;"><x-input v-model.trim="item.arrive_sum" :show-clear="false"></x-input></td> -->
+            <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.arrive_sum"></input></td>
+            <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.bad_product"></input></td>
           </tr>
         </tbody>
       </x-table>
@@ -179,6 +183,7 @@ export default {
       let fnsku = []
       let ware_house_name = []
       let sum = []
+      let defect = []
       // this.putawaySelected.forEach((data) => {
       //   fnsku.push(data.fnsku)
       //   ware_house_name.push(data.ware)
@@ -187,10 +192,12 @@ export default {
       fnsku.push(this.fnsku_options[this.putawayIndex].fnsku)
       ware_house_name.push(this.fnsku_options[this.putawayIndex].ware)
       sum.push(this.fnsku_options[this.putawayIndex].arrive_sum)
+      defect.push(this.fnsku_options[this.putawayIndex].bad_product)
       let params = {
         fnsku: fnsku,
         ware_house_name: ware_house_name,
         sum: sum,
+        defect: defect,
         date: this.dateFormatter(new Date())
       }
       this.$axios.post('/admin/cargos/putaway_fnsku', params,{
@@ -300,6 +307,7 @@ export default {
             res.data.data.forEach((data, index) => {
               if(data.fnsku == this.fnsku) {
                 data.ware = ''
+                data.bad_product = 0
                 data.selected = false
                 this.fnskuwaredetails = data.cargo_ware_houses
                 this.fnsku_options = this.fnsku_options.concat(res.data.data[index])
@@ -388,6 +396,9 @@ export default {
 .scanware-input{
   height: 2rem;
   border: hidden;
+}
+.tableinfo{
+  margin: 0.2rem;
 }
 
 h1, h2 {
