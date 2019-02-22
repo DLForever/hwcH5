@@ -5,6 +5,7 @@ import Home from '@/components/Home'
 import Store_ins from '@/components/Store_ins'
 import Put_Away from '@/components/Put_Away'
 import ProductDetails from '@/components/ProductDetails'
+import WareHouse from '@/components/WareHouse'
 
 Vue.use(Router)
 
@@ -48,6 +49,14 @@ export default new Router({
       component: ProductDetails,
       meta: {
       	keepAlive: false
+      }
+    },
+    {
+      path: '/WareHouse',
+      name: 'WareHouse',
+      component: WareHouse,
+      meta: {
+        keepAlive: false
       }
     },
   ]

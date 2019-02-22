@@ -1,27 +1,15 @@
 <template>
   <div class="hello">
-    <!-- <audio id="audioerr" src="http://47.74.177.128/h5/error.mp3" preload autoplay>
-      <source src="@/assets/error.mp3" type="audio/mpeg">
-      <source src="http://47.74.177.128/h5/error.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="audiosuccess" src="http://47.74.177.128/h5/success.mp3" preload autoplay>
-      <source src="http://47.74.177.128/h5/success.mp3" type="audio/mpeg">
-    </audio> -->
     <group>
-      <input id="scanfnsku" class="scanfnsku-input" v-model.trim="fnsku" @keyup.enter="getData" placeholder="请扫描Fnsku">
-      <!-- <x-input id="scanfnsku" placeholder="请输入Fnsku" v-model.trim="fnsku" @keyup.enter="getData" class="batch-input" :show-clear="false"></x-input> -->
+      <input id="scanfnsku" class="scanfnsku-input" v-model.trim="fnsku" @keyup.enter="getData" placeholder="请扫描库位">
       <x-button class="getdata-button" text="确定" type="primary" @click.native="getData"></x-button>
     </group>
     <br>
-    <div v-if="fnsku_options.length != 0" class="tableinfo">
-      <!-- <x-button class="putaway-button" text="上架" type="primary" @click.native="putaway"></x-button>
-      <br/> -->
+    <div class="tableinfo">
       <x-table class="breakword">
         <thead>
           <tr style="background-color: #F7F7F7">
             <th>上架</th>
-            <!-- <th v-if="selectAllStatus == false" @click="selectAll"><icon type="circle"></icon></th>
-            <th v-else @click="selectAll"><icon type="success"></icon></th> -->
             <th>fnsku</th>
             <th>库位</th>
             <th>数量</th>
@@ -30,41 +18,23 @@
         </thead>
         <tbody v-for="(item, index) in fnsku_options">
           <tr v-if="item.status==4" style='background: #0CF850;'>
-            <!-- <td style="width:2rem">{{index+1}}</td> -->
-            <!-- <td v-if="item.selected == false" style="width:2rem" @click="selectedchange(index)"><icon type="circle"></icon></td>
-            <td v-else style="width:2rem" @click="selectedchange(index)"><icon type="success"></icon></td> -->
             <td style="cursor: pointer; width:2rem;" @click="showConfirm(index)"><img src="@/assets/upload.png" class="img-upload"></td>
             <td style="width:10rem; word-wrap:break-word;">{{item.fnsku}}</td>
-            <td style="width:5rem;">
-              <input style="width: 3rem;" v-model.trim="item.ware" @keyup.enter="addWare(index)" id="scanwareinput" placeholder="请扫描库位" />
-            </td>
             <td style="width:5rem;cursor: pointer;" @click="showWareInput(index)">{{item.ware}}</td>
             <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.arrive_sum"></input></td>
             <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.bad_product"></input></td>
           </tr>
           <tr v-else-if="item.status==8" style='background: #E66671;'>
-            <!-- <td style="width:2rem">{{index+1}}</td> -->
-            <!-- <td v-if="item.selected == false" style="width:2rem" @click="selectedchange(index)"><icon type="circle"></icon></td>
-            <td v-else style="width:2rem" @click="selectedchange(index)"><icon type="success"></icon></td> -->
             <td style="cursor: pointer; width:2rem;" @click="showConfirm(index)"><img src="@/assets/upload.png" class="img-upload"></td>
             <td style="width:10rem; word-wrap:break-word;">{{item.fnsku}}</td>
-            <td style="width:5rem;">
-              <input style="width: 3rem;" v-model.trim="item.ware" @keyup.enter="addWare(index)" id="scanwareinput" placeholder="请扫描库位" />
-            </td>
+            <td style="width:5rem;cursor: pointer;" @click="showWareInput(index)">{{item.ware}}</td>
             <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.arrive_sum"></input></td>
             <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.bad_product"></input></td>
           </tr>
           <tr v-else>
-            <!-- <td style="width:2rem">{{index+1}}</td> -->
-            <!-- <td v-if="item.selected == false" style="width:2rem" @click="selectedchange(index)"><icon type="circle"></icon></td>
-            <td v-else style="width:2rem" @click="selectedchange(index)"><icon type="success"></icon></td> -->
             <td style="cursor: pointer; width:2rem;" @click="showConfirm(index)"><img src="@/assets/upload.png" class="img-upload"></td>
             <td style="word-wrap:break-word;">{{item.fnsku}}</td>
-            <td style="width:5rem;">
-              <input style="width: 3rem;" v-model.trim="item.ware" @keyup.enter="addWare(index)" id="scanwareinput" placeholder="请扫描库位" />
-            </td>
-            <!-- <td style="cursor: pointer;" @click="showWareInput(index)">{{item.ware}}</td> -->
-            <!-- <td style="cursor: pointer;"><x-input v-model.trim="item.arrive_sum" :show-clear="false"></x-input></td> -->
+            <td style="cursor: pointer;" @click="showWareInput(index)">{{item.ware}}</td>
             <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.arrive_sum"></input></td>
             <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.bad_product"></input></td>
           </tr>
@@ -156,10 +126,9 @@ export default {
       let scanwareinput = document.getElementById('scanwareinput')
       scanwareinput.focus()
     },
-    addWare(index) {
-      // this.fnsku_options[this.fnsku_index].ware = this.scanware
-      console.log(this.fnsku_options[index].ware)
-      // this.ware_inputShow = false
+    addWare() {
+      this.fnsku_options[this.fnsku_index].ware = this.scanware
+      this.ware_inputShow = false
     },
     showWareInput(index) {
       this.scanware = ''
@@ -301,26 +270,28 @@ export default {
     getData() {
       if(this.fnsku.trim() == ''){
         this.$vux.toast.show({
-            text: '请输入fnsku',
+            text: '请输入库位',
             type: 'warn'
           })
         this.fnskuwaredetails = []
         return
       }
       this.store_options = []
-      this.$axios.get('/admin/cargos/search_by_fnsku?query=' + this.fnsku, {
+      this.$axios.get('/admin/warehouses?page=1&name=' + this.fnsku, {
         headers: {'Authorization': localStorage.getItem('token')}
       }).then((res) => {
         if(res.data.code == 200) {
           if(res.data.count !=0){
             res.data.data.forEach((data, index) => {
-              if(data.fnsku == this.fnsku) {
-                data.ware = ''
-                data.bad_product = 0
-                data.selected = false
-                this.fnskuwaredetails = data.cargo_ware_houses
-                this.fnsku_options = this.fnsku_options.concat(res.data.data[index])
-              }
+              this.fnskuwaredetails = data.cargo_ware_houses
+              console.log(this.fnskuwaredetails)
+              // if(data.fnsku == this.fnsku) {
+              //   data.ware = ''
+              //   data.bad_product = 0
+              //   data.selected = false
+              //   this.fnskuwaredetails = data.cargo_ware_houses
+              //   this.fnsku_options = this.fnsku_options.concat(res.data.data[index])
+              // }
             })
 
           }else{

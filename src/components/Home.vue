@@ -27,6 +27,12 @@
         </router-link>
         <div class="box-text">详情</div>
       </div>
+      <div class="box-list">
+        <router-link to="/WareHouse">
+          <img src="@/assets/update.png">
+        </router-link>
+        <div class="box-text">更新库存</div>
+      </div>
     </div>
 
     <div v-transfer-dom>
