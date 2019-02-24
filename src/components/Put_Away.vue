@@ -25,46 +25,34 @@
             <th>fnsku</th>
             <th>库位</th>
             <th>数量</th>
-            <th>不良品</th>
+            <th>次品</th>
           </tr>
         </thead>
         <tbody v-for="(item, index) in fnsku_options">
           <tr v-if="item.status==4" style='background: #0CF850;'>
-            <!-- <td style="width:2rem">{{index+1}}</td> -->
-            <!-- <td v-if="item.selected == false" style="width:2rem" @click="selectedchange(index)"><icon type="circle"></icon></td>
-            <td v-else style="width:2rem" @click="selectedchange(index)"><icon type="success"></icon></td> -->
             <td style="cursor: pointer; width:2rem;" @click="showConfirm(index)"><img src="@/assets/upload.png" class="img-upload"></td>
             <td style="width:10rem; word-wrap:break-word;">{{item.fnsku}}</td>
             <td style="width:5rem;">
-              <input style="width: 3rem;" v-model.trim="item.ware" @keyup.enter="addWare(index)" id="scanwareinput" placeholder="请扫描库位" />
+              <input style="width: 3rem;" v-model.trim="item.ware" id="scanwareinput" placeholder="请扫描库位" />
             </td>
-            <td style="width:5rem;cursor: pointer;" @click="showWareInput(index)">{{item.ware}}</td>
             <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.arrive_sum"></input></td>
             <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.bad_product"></input></td>
           </tr>
           <tr v-else-if="item.status==8" style='background: #E66671;'>
-            <!-- <td style="width:2rem">{{index+1}}</td> -->
-            <!-- <td v-if="item.selected == false" style="width:2rem" @click="selectedchange(index)"><icon type="circle"></icon></td>
-            <td v-else style="width:2rem" @click="selectedchange(index)"><icon type="success"></icon></td> -->
             <td style="cursor: pointer; width:2rem;" @click="showConfirm(index)"><img src="@/assets/upload.png" class="img-upload"></td>
             <td style="width:10rem; word-wrap:break-word;">{{item.fnsku}}</td>
             <td style="width:5rem;">
-              <input style="width: 3rem;" v-model.trim="item.ware" @keyup.enter="addWare(index)" id="scanwareinput" placeholder="请扫描库位" />
+              <input style="width: 3rem;" v-model.trim="item.ware" id="scanwareinput" placeholder="请扫描库位" />
             </td>
             <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.arrive_sum"></input></td>
             <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.bad_product"></input></td>
           </tr>
           <tr v-else>
-            <!-- <td style="width:2rem">{{index+1}}</td> -->
-            <!-- <td v-if="item.selected == false" style="width:2rem" @click="selectedchange(index)"><icon type="circle"></icon></td>
-            <td v-else style="width:2rem" @click="selectedchange(index)"><icon type="success"></icon></td> -->
             <td style="cursor: pointer; width:2rem;" @click="showConfirm(index)"><img src="@/assets/upload.png" class="img-upload"></td>
             <td style="word-wrap:break-word;">{{item.fnsku}}</td>
             <td style="width:5rem;">
               <input style="width: 3rem;" v-model.trim="item.ware" @keyup.enter="addWare(index)" id="scanwareinput" placeholder="请扫描库位" />
             </td>
-            <!-- <td style="cursor: pointer;" @click="showWareInput(index)">{{item.ware}}</td> -->
-            <!-- <td style="cursor: pointer;"><x-input v-model.trim="item.arrive_sum" :show-clear="false"></x-input></td> -->
             <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.arrive_sum"></input></td>
             <td style="cursor: pointer;"><input style="width: 3rem;" v-model.trim="item.bad_product"></input></td>
           </tr>
