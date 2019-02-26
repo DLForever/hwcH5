@@ -8,7 +8,7 @@
       <input id="scanfnsku" class="warefnsku-input" v-model.trim="add_fnsku" placeholder="请扫描fnsku">
       <input id="scanfnsku" class="waresum-input" v-model.trim="add_sum" placeholder="请输入数量">
       <x-button class="getdata-button" text="增加" type="primary" @click.native="addWare"></x-button>
-      <span style="float: left; clear: both" v-if="fnskuwaredetails.length == 0">当前库位：{{ware_temp}}</span>
+      <span style="float: left; clear: both">当前库位：{{ware_temp}}</span>
     </group>
     <br>
     <div class="tableinfo">
@@ -37,7 +37,7 @@
             <td>
               <input v-model="item.sum" style="width: 5rem" />
             </td>
-            <td>
+            <td @click="removeWareConfirm(item, index)">
               <swipeout>
                 <swipeout-item transition-mode="follow">
                   <div slot="right-menu">
@@ -66,6 +66,8 @@
     <div v-transfer-dom>
       <confirm v-model="ware_inputShow" title="删除不可恢复，确认删除吗？" @on-confirm="deleteWare">
       </confirm>
+      <confirm v-model="removeware_Show" :title="'确认移除' + removewareName + '库位吗？'" @on-confirm="removeWare">
+        <input class="scanware-input" v-model.trim="removewareName2" id="scanwareinput" placeholder="请扫描移入库位" />
       </confirm>
     </div>
   </div>
@@ -100,7 +102,13 @@ export default {
       ware_id_temp: '',
       add_fnsku: '',
       add_sum: '',
-      ware_temp: ''
+      ware_temp: '',
+      removeware_Show: false,
+      removewareName: '',
+      removewareName2: '',
+      ware_id: '',
+      ware_house_id: '',
+      removeIndex: ''
     }
   },
   created(){
@@ -115,6 +123,41 @@ export default {
     next()
   },
   methods: {
+    removeWare() {
+      let params = {
+        cwh_id: this.ware_id,
+        warehouse: this.removewareName2
+      }
+      this.$axios.post('/admin/warehouses/' + this.ware_house_id + '/move', params,{
+         headers: {
+            'Authorization': localStorage.getItem('token')
+        }
+      }).then((res) => {
+        if(res.data.code == 200) {
+            this.fnskuwaredetails.splice(this.removeIndex, 1)
+            this.$vux.toast.show({
+              text: '移库成功',
+              type: 'success'
+            })
+        }
+      }).catch((res) => {
+
+      }).finally(() => {
+      })
+    },
+    getFocus(){
+      let scanwareinput = document.getElementById('scanwareinput')
+      scanwareinput.focus()
+    },
+    removeWareConfirm(item, index) {
+      this.removewareName2 = ''
+      this.removewareName = item.ware_house_name
+      this.ware_id = item.id
+      this.ware_house_id = item.ware_house_id
+      this.removeIndex = index
+      this.removeware_Show = true
+      setTimeout(this.getFocus,300)
+    },
     undateWare(id, ware_house_id, sum) {
       let params = {
         cargo_ware_house_id: id,
@@ -169,10 +212,6 @@ export default {
       let scanfnsku = document.getElementById('scanfnsku')
       scanfnsku.focus()
     },
-    getFocus(){
-      let scanwareinput = document.getElementById('scanwareinput')
-      scanwareinput.focus()
-    },
     addWare() {
       let params = {
           id: this.ware_id_temp,
@@ -197,12 +236,6 @@ export default {
       }).catch((res) => {
 
       })
-    },
-    showWareInput(index) {
-      this.scanware = ''
-      this.fnsku_index = index
-      this.ware_inputShow = true
-      setTimeout(this.getFocus,300)
     },
     test3(){
       this.myVal.forEach((id) => {
