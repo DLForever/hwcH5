@@ -14,6 +14,10 @@
     </group>
     <br>
     <div v-if="fnsku_options.length != 0" class="tableinfo">
+      <group>
+      <x-input id="batchnumber" placeholder="请输入批次号" v-model.trim="batch_number" class="batch-input" :show-clear="false"></x-input>
+      </group>
+      <br>
       <!-- <x-button class="putaway-button" text="上架" type="primary" @click.native="putaway"></x-button>
       <br/> -->
       <x-table class="breakword">
@@ -109,7 +113,8 @@ export default {
       fnsku_index: '',
       fnskuwaredetails: [],
       putawayShow: false,
-      putawayIndex: undefined
+      putawayIndex: undefined,
+      batch_number: ''
       // testimg: ''
     }
   },
@@ -195,7 +200,8 @@ export default {
         ware_house_name: ware_house_name,
         sum: sum,
         defect: defect,
-        date: this.dateFormatter(new Date())
+        date: this.dateFormatter(new Date()),
+        batch_number: this.batch_number
       }
       this.$axios.post('/admin/cargos/putaway_fnsku', params,{
         headers: {'Authorization': localStorage.getItem('token')}
@@ -308,6 +314,7 @@ export default {
                 data.selected = false
                 this.fnskuwaredetails = data.cargo_ware_houses
                 this.fnsku_options = this.fnsku_options.concat(res.data.data[index])
+                this.batch_number = ''
               }
             })
 

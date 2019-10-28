@@ -8,13 +8,15 @@
       <source src="http://47.74.177.128/h5/success.mp3" type="audio/mpeg">
     </audio> -->
     <group>
-      <x-input placeholder="请输入批次号" v-model.trim="batch_number" class="batch-input" @click.native="test(1)" :show-clear="false"></x-input>
+      <!-- <x-input placeholder="请输入批次号" v-model.trim="batch_number" class="batch-input" @click.native="test(1)" :show-clear="false"></x-input> -->
+      <x-input placeholder="请输入批次号" v-model.trim="batch_number" class="batch-input" :show-clear="false"></x-input>
       <x-button class="storeins-button" text="确定" type="primary" @click.native="getData"></x-button>
     </group>
     <br>
     <div v-if="tableShow">
       <group>
-        <input class="focus-input" id="focusInput" @keyup.enter="storeIns" v-model.trim="logistics_number" @click="test(2)">
+        <!-- <input class="focus-input" id="focusInput" @keyup.enter="storeIns" v-model.trim="logistics_number" @click="test(2)"> -->
+        <input class="focus-input" id="focusInput" @keyup.enter="storeIns" v-model.trim="logistics_number">
         <x-button class="storeins-button" text="入库" type="primary" @click.native="storeIns"></x-button>
       </group>
       <br>
@@ -50,7 +52,27 @@
       </x-table>
     </div>
     <div v-transfer-dom>
-      <confirm v-model="show" title="确定入库吗?" @on-confirm="upload"></confirm>
+      <confirm v-model="show" title="确定入库吗?" @on-confirm="upload">
+        <x-table class="breakword">
+        <thead>
+          <tr>
+            <th>fnsku</th>
+            <th>数量</th>
+          </tr>
+        </thead>
+        <tbody v-for="(item, index) in store_details">
+          <tr>
+            <td style="width:6rem">{{item.fnsku}}</td>
+            <td style="width:6rem">
+              <input style="width: 3rem;" v-model.trim="item.plan_sum" placeholder="数量" />
+            </td>
+          </tr>
+        </tbody>
+      </x-table>
+      </confirm>
+      <!-- <confirm v-model="pick_inputShow" title="拣货" @on-confirm="done_pick" :close-on-confirm="false">
+          <input class="pick-input" v-model.trim="pickScancode" id="scanpickinput" placeholder="请扫描产品" />
+      </confirm> -->
     </div>
   </div>
 
@@ -70,7 +92,8 @@ export default {
       myVal: [],
       show: false,
       logistics_number2: undefined,
-      logistics_number_index: undefined
+      logistics_number_index: undefined,
+      store_details: []
       // testimg: ''
     }
   },
@@ -89,15 +112,26 @@ export default {
       console.log(this.dateFormatter(new Date()))
     },
     showConfirm(logistics_number, index) {
+      this.store_details = []
+      this.store_details = this.store_options[index].product_store_ins
       this.logistics_number2 = logistics_number
       this.logistics_number_index = index
       this.show = true
     },
     upload() {
+      console.log(this.store_details)
+      let sum = []
+      let product_store_ins = []
+      this.store_details.forEach((data) => {
+        sum.push(parseInt(data.plan_sum))
+        product_store_ins.push(data.id)
+      })
       console.log(this.logistics_number)
       let params = {
         logistics_number: this.logistics_number2,
-        date: this.dateFormatter(new Date())
+        date: this.dateFormatter(new Date()),
+        sum: sum,
+        product_store_ins: product_store_ins
       }
       this.$axios.post('/admin/store_ins/done_by_logistics_number', params,{
         headers: {'Authorization': localStorage.getItem('token')}
@@ -107,11 +141,13 @@ export default {
             text: '入库成功',
             type: 'success'
           })
+          this.logistics_number = ''
           this.store_options[this.logistics_number_index]['status'] = 4
           this.store_options.splice(this.logistics_number_index, 1)
           // let audiosuccess = document.getElementById('audiosuccess')
           // audiosuccess.play()
         }else{
+          this.logistics_number = ''
           this.store_options[this.logistics_number_index]['status'] = 8
           // let audioerr = document.getElementById('audioerr')
           // audioerr.play()
@@ -163,8 +199,8 @@ export default {
               this.getDataLoop(i+1)
             }
             this.tableShow = true
-            let temp = setInterval(this.test2, 100)
-            this.myVal.push(temp)
+            // let temp = setInterval(this.test2, 100)
+            // this.myVal.push(temp)
           }
           if(res.data.count == 0){
             this.$vux.toast.show({
@@ -224,34 +260,39 @@ export default {
         this.logistics_number = ''
         return
       }
-      let params = {
-        logistics_number: this.logistics_number,
-        date: this.dateFormatter(new Date())
-      }
-      this.$axios.post('/admin/store_ins/done_by_logistics_number', params,{
-        headers: {'Authorization': localStorage.getItem('token')}
-      }).then((res) => {
-        if(res.data.code == 200) {
-          this.$vux.toast.show({
-            text: '入库成功',
-            type: 'success'
-          })
-          this.store_options[resultIndex]['status'] = 4
-          this.store_options.splice(resultIndex, 1)
-          // let audiosuccess = document.getElementById('audiosuccess')
-          // audiosuccess.play()
-        }else{
-          this.store_options[resultIndex]['status'] = 8
-          // let audioerr = document.getElementById('audioerr')
-          // audioerr.play()
-        }
-        // let temp = this.store_options[resultIndex]
+      this.store_details = []
+      this.store_details = this.store_options[resultIndex].product_store_ins
+      this.logistics_number2 = this.logistics_number
+      this.logistics_number_index = resultIndex
+      this.show = true
+      // let params = {
+      //   logistics_number: this.logistics_number,
+      //   date: this.dateFormatter(new Date())
+      // }
+      // this.$axios.post('/admin/store_ins/done_by_logistics_number', params,{
+      //   headers: {'Authorization': localStorage.getItem('token')}
+      // }).then((res) => {
+      //   if(res.data.code == 200) {
+      //     this.$vux.toast.show({
+      //       text: '入库成功',
+      //       type: 'success'
+      //     })
+      //     this.store_options[resultIndex]['status'] = 4
+      //     this.store_options.splice(resultIndex, 1)
+      //     // let audiosuccess = document.getElementById('audiosuccess')
+      //     // audiosuccess.play()
+      //   }else{
+      //     this.store_options[resultIndex]['status'] = 8
+      //     // let audioerr = document.getElementById('audioerr')
+      //     // audioerr.play()
+      //   }
+      //   // let temp = this.store_options[resultIndex]
         
-        // this.store_options.unshift(temp)
-      }).catch((res) => {
-      }).finally((res) => {
-        this.logistics_number = ''
-      })
+      //   // this.store_options.unshift(temp)
+      // }).catch((res) => {
+      // }).finally((res) => {
+      //   this.logistics_number = ''
+      // })
     },
     dateFormatter(date) {
       let y = date.getFullYear()
